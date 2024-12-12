@@ -18,7 +18,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/rob3000/nestjs-kafka.git"
+    "url": "git+https://github.com/alti-js/nestjs-kafka.git"
   },
   "keywords": [
     "nestjs",
