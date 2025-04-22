@@ -56,13 +56,11 @@ export class KafkaService implements OnModuleInit, OnModuleDestroy {
     });
 
     if (consumerConfig) {
-      const { groupId } = consumerConfig;
-      const consumerOptions = Object.assign(
-        {
-          groupId: this.getGroupIdSuffix(groupId),
-        },
-        consumerConfig
-      );
+      const { groupId } = consumerConfig ?? {};
+      const consumerOptions = {
+        ...(groupId && { groupId: this.getGroupIdSuffix(groupId) }),
+        ...(consumerConfig ?? {}),
+      };
 
       this.consumer = this.kafka.consumer(consumerOptions);
     }
@@ -121,15 +119,24 @@ export class KafkaService implements OnModuleInit, OnModuleDestroy {
    */
   private async getTopicOffsets(): Promise<void> {
     const topics = SUBSCRIBER_MAP.keys();
-
-    for await (const topic of topics) {
-      try {
-        const topicOffsets = await this.admin.fetchTopicOffsets(topic);
-        this.topicOffsets.set(topic, topicOffsets);
-      } catch (e) {
-        this.logger.error("Error fetching topic offset: ", topic, e.message);
-      }
-    }
+    await Promise.all(
+      Array.from(topics).map(async (topic) => {
+        try {
+          const topicOffsets = await this.admin.fetchTopicOffsets(topic);
+          this.topicOffsets.set(topic, topicOffsets);
+        } catch (e) {
+          this.logger.error("Error fetching topic offset: ", topic, e.message);
+        }
+      })
+    );
+    // for await (const topic of topics) {
+    //   try {
+    //     const topicOffsets = await this.admin.fetchTopicOffsets(topic);
+    //     this.topicOffsets.set(topic, topicOffsets);
+    //   } catch (e) {
+    //     this.logger.error("Error fetching topic offset: ", topic, e.message);
+    //   }
+    // }
   }
 
   /**
