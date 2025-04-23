@@ -272,12 +272,10 @@ export class KafkaService implements OnModuleInit, OnModuleDestroy {
       ? this.options.consumerRunConfig
       : {};
     if (!this.consumer) {
-      this.logger.error(
+      this.logger.log(
         "There is no consumer, unable to bind all topic to consumer."
       );
-      throw new Error(
-        "There is no consumer, unable to bind all topic to consumer."
-      );
+      return;
     }
     this.consumer.run({
       ...runConfig,
