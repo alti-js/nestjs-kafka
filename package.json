@@ -1,6 +1,6 @@
 {
   "name": "@alti-js/nestjs-kafka",
-  "version": "0.4.0",
+  "version": "0.5.0",
   "description": "KafkaJS integration with NestJS",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
