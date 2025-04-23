@@ -27,14 +27,14 @@ import {
 
 @Injectable()
 export class KafkaService implements OnModuleInit, OnModuleDestroy {
-  private kafka: Kafka;
-  private producer: Producer;
-  private consumer: Consumer;
-  private admin: Admin;
+  private readonly kafka: Kafka;
+  private readonly producer: Producer;
+  private readonly consumer: Consumer;
+  private readonly admin: Admin;
   private deserializer: Deserializer;
   private serializer: Serializer;
-  private autoConnect: boolean;
-  private options: KafkaModuleOption["options"];
+  private readonly autoConnect: boolean;
+  private readonly options: KafkaModuleOption["options"];
 
   protected topicOffsets: Map<
     string,
@@ -129,14 +129,6 @@ export class KafkaService implements OnModuleInit, OnModuleDestroy {
         }
       })
     );
-    // for await (const topic of topics) {
-    //   try {
-    //     const topicOffsets = await this.admin.fetchTopicOffsets(topic);
-    //     this.topicOffsets.set(topic, topicOffsets);
-    //   } catch (e) {
-    //     this.logger.error("Error fetching topic offset: ", topic, e.message);
-    //   }
-    // }
   }
 
   /**
@@ -168,8 +160,6 @@ export class KafkaService implements OnModuleInit, OnModuleDestroy {
 
     const serializedPacket = await this.serializer.serialize(message);
 
-    // @todo - rather than have a producerRecord,
-    // most of this can be done when we create the controller.
     return await this.producer.send(serializedPacket);
   }
 
@@ -248,8 +238,7 @@ export class KafkaService implements OnModuleInit, OnModuleDestroy {
    * @param options
    */
   protected initializeSerializer(options: KafkaModuleOption["options"]): void {
-    this.serializer =
-      (options && options.serializer) || new KafkaRequestSerializer();
+    this.serializer = options?.serializer || new KafkaRequestSerializer();
   }
 
   /**
@@ -261,7 +250,7 @@ export class KafkaService implements OnModuleInit, OnModuleDestroy {
     options: KafkaModuleOption["options"]
   ): void {
     this.deserializer =
-      (options && options.deserializer) || new KafkaResponseDeserializer();
+      options?.deserializer || new KafkaResponseDeserializer();
   }
 
   /**
@@ -322,7 +311,7 @@ export class KafkaService implements OnModuleInit, OnModuleDestroy {
 
         // Seek by timestamp
         if (typeof seekPoint == "object") {
-          const time = seekPoint as Date;
+          const time = seekPoint;
           seek = time.getTime().toString();
         }
 
